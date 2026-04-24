@@ -9,9 +9,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-const FULL_NAME = "vakula";
-const ROLL_NUMBER = "AP23110010239";
-const EMAIL = "your-email@example.com";
+const DEFAULT_FULL_NAME = "vakula";
+const DEFAULT_ROLL_NUMBER = "AP23110010239";
+const DEFAULT_EMAIL = "your-email@example.com";
 
 function buildConcatString(alphabets) {
   const chars = alphabets.join("").split("").reverse();
@@ -38,6 +38,11 @@ app.get("/bfhl", (req, res) => {
 app.post("/bfhl", (req, res) => {
   try {
     const data = req.body?.data;
+    const student = req.body?.student || {};
+
+    const fullName = String(student.name || DEFAULT_FULL_NAME).trim();
+    const rollNumber = String(student.roll_number || DEFAULT_ROLL_NUMBER).trim();
+    const email = String(student.email || DEFAULT_EMAIL).trim();
 
     if (!Array.isArray(data)) {
       return res.status(400).json({
@@ -96,9 +101,9 @@ app.post("/bfhl", (req, res) => {
 
     const response = {
       is_success: true,
-      user_id: `${FULL_NAME.toLowerCase()}_${ROLL_NUMBER.toLowerCase()}`,
-      email: EMAIL,
-      roll_number: ROLL_NUMBER,
+      user_id: `${fullName.toLowerCase()}_${rollNumber.toLowerCase()}`,
+      email,
+      roll_number: rollNumber,
       odd_numbers,
       even_numbers,
       alphabets,

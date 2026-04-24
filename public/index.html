@@ -257,6 +257,7 @@
       const treeGrid = document.getElementById("treeGrid");
       const invalidEntries = document.getElementById("invalidEntries");
       const duplicateEntries = document.getElementById("duplicateEntries");
+      let currentStudent = null;
 
       function parseTokens(text) {
         return text.split(/[\n,]+/).map((t) => t.trim()).filter(Boolean);
@@ -273,6 +274,7 @@
       }
 
       function applySession(student) {
+        currentStudent = student;
         studentMeta.textContent = `Student: ${student.name} | ${student.collegeId} | ${student.email}`;
         authShell.classList.add("hidden");
         appShell.classList.remove("hidden");
@@ -439,7 +441,16 @@
           const res = await fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ data: tokens })
+            body: JSON.stringify({
+              data: tokens,
+              student: currentStudent
+                ? {
+                    name: currentStudent.name,
+                    email: currentStudent.email,
+                    roll_number: currentStudent.collegeId
+                  }
+                : undefined
+            })
           });
           const json = await res.json().catch(() => ({}));
           responseJson.textContent = JSON.stringify(json, null, 2);
