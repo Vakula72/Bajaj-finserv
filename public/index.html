@@ -3,292 +3,268 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BFHL Frontend Demo</title>
+    <title>BFHL API Playground</title>
     <style>
       :root {
-        --bg: #070d1f;
-        --panel: #0f1732;
-        --panel-2: #131d3d;
-        --line: rgba(255, 255, 255, 0.14);
-        --text: #eef2ff;
-        --muted: #95a3cc;
-        --good: #2ad38b;
-        --warn: #ff9f43;
-        --bad: #ff5d73;
-        --blue: #4d7cff;
-        --blue-soft: #6f8fff;
+        --bg: #f3f6fd;
+        --card: #ffffff;
+        --line: #e0e6f4;
+        --text: #1f2a44;
+        --muted: #6a7692;
+        --primary: #4868f7;
+        --primary-2: #5d3ee8;
+        --ok-bg: #e8f8ee;
+        --ok-text: #146b34;
+        --bad-bg: #ffecef;
+        --bad-text: #b02a37;
       }
       * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: Inter, Segoe UI, Arial, sans-serif;
-        color: var(--text);
-        background: radial-gradient(circle at 10% 0%, #1b2961 0%, var(--bg) 48%);
+      body { margin: 0; font-family: Inter, Segoe UI, Arial, sans-serif; background: var(--bg); color: var(--text); }
+      .hidden { display: none !important; }
+
+      .auth-shell { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+      .auth-card {
+        width: min(480px, 96%);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 10px 30px rgba(39, 52, 92, 0.08);
       }
-      .wrap { width: min(1100px, 94%); margin: 18px auto 30px; }
-      .header {
+      .auth-title { margin: 0 0 6px; font-size: 1.3rem; }
+      .auth-sub { margin: 0 0 14px; color: var(--muted); font-size: 0.9rem; }
+
+      .wrap { width: min(1180px, 95%); margin: 12px auto 28px; }
+      .hero {
+        background: linear-gradient(95deg, var(--primary), var(--primary-2));
+        color: #fff;
+        border-radius: 14px;
+        padding: 14px 16px;
+      }
+      .hero h1 { margin: 0; font-size: 2rem; font-weight: 800; }
+      .hero p { margin: 6px 0 0; opacity: 0.9; }
+
+      .main-card {
+        background: var(--card);
         border: 1px solid var(--line);
         border-radius: 14px;
-        background: linear-gradient(155deg, #15244e, #0d1530);
-        padding: 10px 16px;
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 12px;
-      }
-      .title { margin: 0; font-size: 1.08rem; }
-      .small { color: var(--muted); margin: 4px 0 0; font-size: .87rem; }
-      .pill {
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        padding: 6px 10px;
-        font-size: .78rem;
-        color: #cdd8ff;
-        background: rgba(255,255,255,.04);
-      }
-      .layout {
-        margin-top: 14px;
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 12px;
-      }
-      .card {
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        background: linear-gradient(165deg, var(--panel), var(--panel-2));
         padding: 14px;
+        margin-top: 10px;
       }
-      .card h2 { margin: 0 0 10px; font-size: .96rem; color: #d8e1ff; }
-      label { display: block; color: var(--muted); font-size: .84rem; margin-bottom: 6px; }
-      textarea, input {
+
+      label { display: block; color: var(--muted); font-size: 0.84rem; margin: 6px 0 6px; }
+      input, textarea {
         width: 100%;
-        border-radius: 10px;
-        border: 1px solid var(--line);
-        color: var(--text);
-        background: #0a1129;
-        padding: 10px 11px;
-        margin-bottom: 10px;
-      }
-      textarea { min-height: 120px; resize: vertical; }
-      .btns { display: flex; gap: 8px; flex-wrap: wrap; }
-      button {
         border-radius: 8px;
+        border: 1px solid #ced7ef;
+        background: #fdfefe;
+        padding: 10px;
+        font-size: 0.92rem;
+      }
+      textarea { min-height: 130px; resize: vertical; }
+      .btns { display: flex; gap: 8px; margin-top: 10px; }
+      button {
         border: 1px solid transparent;
+        border-radius: 7px;
         padding: 8px 12px;
         font-weight: 700;
-        font-size: .82rem;
         cursor: pointer;
       }
-      .primary { background: linear-gradient(90deg, var(--blue), var(--blue-soft)); color: #fff; }
-      .ghost { background: rgba(255,255,255,.06); color: #dbe4ff; border-color: var(--line); }
-      .status { margin: 10px 0 0; font-size: .84rem; }
-      .status.good { color: var(--good); }
-      .status.bad { color: var(--bad); }
-      .stats {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-      }
-      .stat {
-        border: 1px solid var(--line);
-        background: rgba(255,255,255,.03);
-        border-radius: 10px;
-        padding: 10px;
-      }
-      .k { color: var(--muted); font-size: .74rem; margin: 0 0 5px; }
-      .v { margin: 0; font-size: 1rem; font-weight: 800; }
-      .list {
-        margin-top: 8px;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 8px;
-        background: rgba(255,255,255,.03);
-        min-height: 60px;
-      }
-      .list span {
-        display: inline-block;
-        margin: 4px 5px 0 0;
-        border: 1px solid var(--line);
-        padding: 4px 8px;
-        border-radius: 999px;
-        font-size: .76rem;
-        color: #d8e4ff;
-      }
-      .trees {
+      .primary { background: var(--primary); color: #fff; }
+      .ghost { background: #f4f7ff; color: #2d3d6b; border-color: #d8e0f5; }
+      .status {
         margin-top: 10px;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-        gap: 8px;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 0.86rem;
       }
-      .tree {
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 8px;
-        background: rgba(255,255,255,.03);
-      }
-      .tree h4 { margin: 0 0 8px; font-size: .78rem; color: #bcd0ff; font-weight: 600; }
-      .tree pre {
-        margin: 0;
-        font-size: .74rem;
-        line-height: 1.3;
-        color: #dee7ff;
-        white-space: pre;
-      }
-      .graph {
-        margin-top: 8px;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        background: #0a122a;
-        min-height: 220px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .graph svg {
-        width: 100%;
-        height: 220px;
-      }
-      .graph-empty {
-        color: var(--muted);
-        font-size: .82rem;
-      }
-      .json {
-        margin-top: 10px;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 9px;
-        background: #090f25;
-        max-height: 320px;
-        overflow: auto;
-      }
-      .json pre { margin: 0; font-size: .77rem; color: #dce4ff; }
-      .footer {
+      .status.good { background: var(--ok-bg); color: var(--ok-text); border: 1px solid #cfe8d7; }
+      .status.bad { background: var(--bad-bg); color: var(--bad-text); border: 1px solid #f5c7ce; }
+      .status:empty { display: none; }
+
+      .overview {
         margin-top: 12px;
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
       }
-      .foot-item {
+      .metric {
         border: 1px solid var(--line);
         border-radius: 10px;
-        background: rgba(255,255,255,.03);
-        padding: 9px;
+        background: #fafcff;
+        padding: 10px;
       }
-      .foot-item p { margin: 0; font-size: .72rem; color: var(--muted); }
-      .foot-item a {
+      .metric .k { color: var(--muted); font-size: 0.75rem; margin: 0 0 6px; }
+      .metric .v { margin: 0; font-size: 1.5rem; font-weight: 800; color: #304a90; text-align: center; }
+
+      .section-title { margin: 16px 0 8px; font-size: 1.08rem; font-weight: 700; }
+      .tree-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 10px;
+      }
+      .tree-card {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        padding: 10px;
+      }
+      .tree-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: center;
+        font-size: 0.82rem;
+        margin-bottom: 8px;
+      }
+      .tree-badge {
+        padding: 2px 6px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        border: 1px solid #d8e0f5;
+        color: #3f4f81;
+        background: #f8faff;
+      }
+      .tree-badge.warn { color: #a05300; background: #fff5e8; border-color: #ffe1b8; }
+      .tree-svg { width: 100%; height: 140px; border-radius: 8px; background: #fbfdff; border: 1px solid #edf1fb; }
+
+      .chips-wrap {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .chip-card {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px;
+        background: #fff;
+      }
+      .chip-card h4 { margin: 0 0 7px; font-size: 0.88rem; }
+      .chip {
         display: inline-block;
-        margin-top: 5px;
-        color: #cbd8ff;
-        font-size: .8rem;
-        word-break: break-all;
+        margin: 4px 5px 0 0;
+        border-radius: 999px;
+        padding: 4px 8px;
+        font-size: 0.75rem;
       }
-      @media (max-width: 920px) {
-        .layout, .footer { grid-template-columns: 1fr; }
-        .stats { grid-template-columns: repeat(2, 1fr); }
+      .chip.red { background: #ffecef; color: #b0304f; border: 1px solid #f7c7d1; }
+      .chip.orange { background: #fff3e5; color: #9b5d00; border: 1px solid #ffd9aa; }
+      .chip.empty { background: #f2f6ff; color: #6881be; border: 1px solid #dbe5fb; }
+
+      .student { margin-top: 8px; color: #e6ecff; font-size: 0.84rem; }
+      .raw-box {
+        margin-top: 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #0f1c3b;
+        color: #d6e2ff;
+        max-height: 210px;
+        overflow: auto;
+      }
+      .raw-box pre { margin: 0; padding: 10px; font-size: 0.78rem; }
+
+      @media (max-width: 900px) {
+        .overview { grid-template-columns: repeat(2, 1fr); }
+        .chips-wrap { grid-template-columns: 1fr; }
       }
     </style>
   </head>
   <body>
-    <main class="wrap">
-      <section class="header">
-        <span class="pill">POST /bfhl</span>
+    <section class="auth-shell" id="authShell">
+      <div class="auth-card">
+        <h1 class="auth-title">Student Sign In</h1>
+        <p class="auth-sub">Use your college details to access the BFHL dashboard.</p>
+        <label for="studentName">Full Name</label>
+        <input id="studentName" type="text" placeholder="Vakula" />
+        <label for="studentEmail">College Email</label>
+        <input id="studentEmail" type="email" placeholder="name@college.edu" />
+        <label for="studentCollegeId">College ID</label>
+        <input id="studentCollegeId" type="text" placeholder="AP23110010239" />
+        <div class="btns"><button class="primary" id="signInBtn">Sign In</button></div>
+        <p id="authStatus" class="status"></p>
+      </div>
+    </section>
+
+    <main class="wrap hidden" id="appShell">
+      <section class="hero">
+        <h1>BFHL API Playground</h1>
+        <p>Submit node relationships and get hierarchical insights</p>
+        <p class="student" id="studentMeta">Student: -</p>
       </section>
 
-      <section class="layout">
-        <article class="card">
-          <h2>Enter Node List</h2>
-          <label for="baseUrl">Backend API Base URL (without /bfhl)</label>
-          <input id="baseUrl" placeholder="https://vakula-bfhl.herokuapp.com" />
-          <label for="payload">Node List Input (comma or newline separated)</label>
-          <textarea id="payload">a,1,334,4,R,$</textarea>
-          <div class="btns">
-            <button class="primary" id="submitBtn">Submit</button>
-            <button class="ghost" id="sampleBtn" type="button">Load Sample</button>
-            <button class="ghost" id="clearBtn" type="button">Clear</button>
-          </div>
-          <p id="status" class="status"></p>
-
-          <div class="json">
-            <pre id="responseJson">{}</pre>
-          </div>
-        </article>
-
-        <aside class="card">
-          <h2>Response Overview</h2>
-          <div class="stats">
-            <div class="stat"><p class="k">Is Success</p><p class="v" id="successVal">-</p></div>
-            <div class="stat"><p class="k">Odd Count</p><p class="v" id="oddVal">0</p></div>
-            <div class="stat"><p class="k">Even Count</p><p class="v" id="evenVal">0</p></div>
-            <div class="stat"><p class="k">Alpha Tokens</p><p class="v" id="alphaVal">0</p></div>
-            <div class="stat"><p class="k">Special Tokens</p><p class="v" id="specialVal">0</p></div>
-            <div class="stat"><p class="k">Sum</p><p class="v" id="sumVal">0</p></div>
-          </div>
-
-          <h2 style="margin-top:12px;">Hierarchy View</h2>
-          <div class="graph" id="graphView">
-            <div class="graph-empty">Enter edges like A->B, A->C to view graph</div>
-          </div>
-          <div class="trees" id="treeView">
-            <div class="tree"><h4>Root</h4><pre>• (awaiting)</pre></div>
-            <div class="tree"><h4>Odd Nodes</h4><pre>• -</pre></div>
-            <div class="tree"><h4>Even Nodes</h4><pre>• -</pre></div>
-          </div>
-
-          <h2 style="margin-top:12px;">Token Buckets</h2>
-          <div class="list" id="bucketList"></div>
-        </aside>
-      </section>
-
-      <section class="footer">
-        <div class="foot-item">
-          <p>FRONTEND URL (LIVE)</p>
-          <a href="#" id="frontendLink">http://localhost:3000</a>
+      <section class="main-card">
+        <h3 style="margin: 0 0 6px;">Enter Node Relationships</h3>
+        <label for="baseUrl">Backend API Base URL (without /bfhl)</label>
+        <input id="baseUrl" placeholder="https://your-backend.onrender.com" />
+        <label for="payload">Enter node relationships in the format X->Y (e.g., A->B, A->C, B->D)</label>
+        <textarea id="payload">A->B, A->C, B->D, C->E, E->F, X->Y, Y->Z, Z->X, hello, 1->2, A->></textarea>
+        <div class="btns">
+          <button class="primary" id="submitBtn">Submit Request</button>
+          <button class="ghost" id="clearBtn" type="button">Clear</button>
         </div>
-        <div class="foot-item">
-          <p>BACKEND API BASE URL (LIVE)</p>
-          <a href="#" id="backendLink">http://localhost:3000</a>
+        <p id="status" class="status"></p>
+
+        <h3 class="section-title">Response Overview</h3>
+        <div class="overview">
+          <div class="metric"><p class="k">Total Trees</p><p class="v" id="treeCount">0</p></div>
+          <div class="metric"><p class="k">Total Cycles</p><p class="v" id="cycleCount">0</p></div>
+          <div class="metric"><p class="k">Largest Tree Root</p><p class="v" id="largestRoot">-</p></div>
+          <div class="metric"><p class="k">Invalid Entries</p><p class="v" id="invalidCount">0</p></div>
         </div>
-        <div class="foot-item">
-          <p>GITHUB REPOSITORY (PUBLIC)</p>
-          <a href="#" id="repoLink">Add your repo URL</a>
+
+        <h3 class="section-title">Hierarchies</h3>
+        <div class="tree-grid" id="treeGrid"></div>
+
+        <div class="chips-wrap">
+          <div class="chip-card">
+            <h4>Invalid Entries</h4>
+            <div id="invalidEntries"></div>
+          </div>
+          <div class="chip-card">
+            <h4>Duplicate Edges</h4>
+            <div id="duplicateEntries"></div>
+          </div>
+        </div>
+
+        <div class="raw-box">
+          <pre id="responseJson">{}</pre>
         </div>
       </section>
     </main>
 
     <script>
+      const authShell = document.getElementById("authShell");
+      const appShell = document.getElementById("appShell");
+      const studentNameInput = document.getElementById("studentName");
+      const studentEmailInput = document.getElementById("studentEmail");
+      const studentCollegeIdInput = document.getElementById("studentCollegeId");
+      const signInBtn = document.getElementById("signInBtn");
+      const authStatus = document.getElementById("authStatus");
+      const studentMeta = document.getElementById("studentMeta");
+
       const baseUrl = document.getElementById("baseUrl");
       const payload = document.getElementById("payload");
       const submitBtn = document.getElementById("submitBtn");
-      const sampleBtn = document.getElementById("sampleBtn");
       const clearBtn = document.getElementById("clearBtn");
       const status = document.getElementById("status");
       const responseJson = document.getElementById("responseJson");
-      const bucketList = document.getElementById("bucketList");
-      const treeView = document.getElementById("treeView");
-      const graphView = document.getElementById("graphView");
-      const frontendLink = document.getElementById("frontendLink");
-      const backendLink = document.getElementById("backendLink");
 
-      const successVal = document.getElementById("successVal");
-      const oddVal = document.getElementById("oddVal");
-      const evenVal = document.getElementById("evenVal");
-      const alphaVal = document.getElementById("alphaVal");
-      const specialVal = document.getElementById("specialVal");
-      const sumVal = document.getElementById("sumVal");
+      const treeCountEl = document.getElementById("treeCount");
+      const cycleCountEl = document.getElementById("cycleCount");
+      const largestRootEl = document.getElementById("largestRoot");
+      const invalidCountEl = document.getElementById("invalidCount");
+      const treeGrid = document.getElementById("treeGrid");
+      const invalidEntries = document.getElementById("invalidEntries");
+      const duplicateEntries = document.getElementById("duplicateEntries");
 
-      function parseInput(text) {
+      function parseTokens(text) {
         return text.split(/[\n,]+/).map((t) => t.trim()).filter(Boolean);
       }
 
-      function parseEdges(items) {
-        const edges = [];
-        for (const token of items) {
-          const match = token.match(/^([A-Za-z0-9]+)\s*->\s*([A-Za-z0-9]+)$/);
-          if (match) {
-            edges.push({ from: match[1], to: match[2] });
-          }
-        }
-        return edges;
+      function setAuthStatus(message, ok) {
+        authStatus.textContent = message;
+        authStatus.className = `status ${ok ? "good" : "bad"}`;
       }
 
       function setStatus(message, ok) {
@@ -296,146 +272,216 @@
         status.className = `status ${ok ? "good" : "bad"}`;
       }
 
-      function updateOverview(data) {
-        successVal.textContent = String(Boolean(data.is_success));
-        oddVal.textContent = String((data.odd_numbers || []).length);
-        evenVal.textContent = String((data.even_numbers || []).length);
-        alphaVal.textContent = String((data.alphabets || []).length);
-        specialVal.textContent = String((data.special_characters || []).length);
-        sumVal.textContent = data.sum || "0";
+      function applySession(student) {
+        studentMeta.textContent = `Student: ${student.name} | ${student.collegeId} | ${student.email}`;
+        authShell.classList.add("hidden");
+        appShell.classList.remove("hidden");
       }
 
-      function renderTokens(data) {
-        const groups = [
-          ...(data.odd_numbers || []).map((v) => `odd:${v}`),
-          ...(data.even_numbers || []).map((v) => `even:${v}`),
-          ...(data.alphabets || []).map((v) => `alpha:${v}`),
-          ...(data.special_characters || []).map((v) => `special:${v}`)
-        ];
-        if (!groups.length) {
-          bucketList.innerHTML = "<span>No tokens yet</span>";
-          return;
+      function parseGraph(tokens) {
+        const edges = [];
+        const invalid = [];
+        const duplicate = new Set();
+        const seen = new Set();
+        const edgeRegex = /^([A-Za-z0-9]+)\s*->\s*([A-Za-z0-9]+)$/;
+
+        for (const token of tokens) {
+          const match = token.match(edgeRegex);
+          if (!match) {
+            invalid.push(token);
+            continue;
+          }
+          const edge = { from: match[1], to: match[2] };
+          const key = `${edge.from}->${edge.to}`;
+          if (seen.has(key)) duplicate.add(key);
+          seen.add(key);
+          edges.push(edge);
         }
-        bucketList.innerHTML = groups.map((g) => `<span>${g}</span>`).join("");
+        return { edges, invalid, duplicate: Array.from(duplicate) };
       }
 
-      function renderTree(data) {
-        const root = data.user_id || "root";
-        const odd = (data.odd_numbers || []).join("\n• ") || "-";
-        const even = (data.even_numbers || []).join("\n• ") || "-";
-        treeView.innerHTML = `
-          <div class="tree"><h4>Root</h4><pre>• ${root}</pre></div>
-          <div class="tree"><h4>Odd Nodes</h4><pre>• ${odd}</pre></div>
-          <div class="tree"><h4>Even Nodes</h4><pre>• ${even}</pre></div>
-        `;
-      }
+      function buildForest(edges) {
+        const children = new Map();
+        const indegree = new Map();
+        const nodes = new Set();
 
-      function renderGraph(items) {
-        const edges = parseEdges(items);
-        if (!edges.length) {
-          graphView.innerHTML = '<div class="graph-empty">Enter edges like A->B, A->C to view graph</div>';
-          return;
+        for (const { from, to } of edges) {
+          nodes.add(from);
+          nodes.add(to);
+          if (!children.has(from)) children.set(from, []);
+          children.get(from).push(to);
+          indegree.set(to, (indegree.get(to) || 0) + 1);
+          if (!indegree.has(from)) indegree.set(from, indegree.get(from) || 0);
         }
 
-        const nodeSet = new Set();
-        edges.forEach((e) => {
-          nodeSet.add(e.from);
-          nodeSet.add(e.to);
-        });
-        const nodes = Array.from(nodeSet);
-        const width = 520;
-        const height = 220;
-        const cx = width / 2;
-        const cy = height / 2;
-        const radius = Math.min(width, height) * 0.34;
+        const roots = Array.from(nodes).filter((n) => (indegree.get(n) || 0) === 0);
+        const unrooted = Array.from(nodes).filter((n) => !roots.includes(n));
+        const used = new Set();
+        const trees = [];
+        const cycles = [];
 
+        function walk(start) {
+          const q = [start];
+          const local = new Set();
+          let size = 0;
+          let depth = 0;
+          const levels = [[start]];
+          local.add(start);
+          used.add(start);
+
+          while (q.length) {
+            const levelSize = q.length;
+            const layer = [];
+            for (let i = 0; i < levelSize; i++) {
+              const node = q.shift();
+              size++;
+              const kids = children.get(node) || [];
+              for (const k of kids) {
+                if (!local.has(k)) {
+                  local.add(k);
+                  used.add(k);
+                  q.push(k);
+                  layer.push(k);
+                }
+              }
+            }
+            if (layer.length) {
+              levels.push(layer);
+              depth++;
+            }
+          }
+          return { root: start, size, depth, levels };
+        }
+
+        for (const r of roots) trees.push(walk(r));
+        for (const n of unrooted) {
+          if (used.has(n)) continue;
+          cycles.push(n);
+          trees.push(walk(n));
+        }
+
+        return { trees, cycleCount: cycles.length, children };
+      }
+
+      function drawTreeCard(tree, idx, children, isCycle) {
+        const width = 300;
+        const height = 140;
+        const nodeR = 12;
         const pos = {};
-        nodes.forEach((n, i) => {
-          const a = (Math.PI * 2 * i) / nodes.length - Math.PI / 2;
-          pos[n] = {
-            x: cx + radius * Math.cos(a),
-            y: cy + radius * Math.sin(a)
-          };
+        tree.levels.forEach((level, d) => {
+          const y = 24 + d * 34;
+          const gap = width / (level.length + 1);
+          level.forEach((node, i) => {
+            pos[node] = { x: gap * (i + 1), y };
+          });
         });
 
-        const lines = edges
-          .map((e) => {
-            const p1 = pos[e.from];
-            const p2 = pos[e.to];
-            return `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#6f8fff" stroke-width="1.8" opacity="0.9" marker-end="url(#arrow)" />`;
-          })
-          .join("");
+        const lines = [];
+        for (const [from, kids] of children.entries()) {
+          if (!pos[from]) continue;
+          for (const k of kids) {
+            if (!pos[k]) continue;
+            lines.push(`<line x1="${pos[from].x}" y1="${pos[from].y}" x2="${pos[k].x}" y2="${pos[k].y}" stroke="#96a6d6" stroke-width="1.4"/>`);
+          }
+        }
 
-        const circles = nodes
-          .map((n) => {
-            const p = pos[n];
-            return `
-              <circle cx="${p.x}" cy="${p.y}" r="14" fill="#1b2c66" stroke="#88a2ff" stroke-width="1.2" />
-              <text x="${p.x}" y="${p.y + 4}" text-anchor="middle" fill="#eaf0ff" font-size="11" font-family="Inter, Segoe UI, Arial">${n}</text>
-            `;
-          })
-          .join("");
+        const circles = Object.entries(pos).map(([n, p], i) => {
+          const palette = ["#5d3ee8", "#3f83f8", "#30b98f", "#8b5cf6", "#22c55e"];
+          const color = palette[i % palette.length];
+          return `
+            <circle cx="${p.x}" cy="${p.y}" r="${nodeR}" fill="${color}"></circle>
+            <text x="${p.x}" y="${p.y + 4}" text-anchor="middle" fill="#fff" font-size="10">${n}</text>
+          `;
+        }).join("");
 
-        graphView.innerHTML = `
-          <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Node graph">
-            <defs>
-              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#6f8fff"></path>
-              </marker>
-            </defs>
-            ${lines}
-            ${circles}
-          </svg>
+        return `
+          <div class="tree-card">
+            <div class="tree-head">
+              <span>${idx + 1}. Root: ${tree.root}</span>
+              <span class="tree-badge ${isCycle ? "warn" : ""}">${isCycle ? "Cycle Detected" : "Depth: " + tree.depth}</span>
+            </div>
+            <svg class="tree-svg" viewBox="0 0 ${width} ${height}">
+              ${lines.join("")}
+              ${circles}
+            </svg>
+          </div>
         `;
       }
 
-      submitBtn.addEventListener("click", async () => {
+      function renderChips(container, items, cls) {
+        if (!items.length) {
+          container.innerHTML = `<span class="chip empty">None</span>`;
+          return;
+        }
+        container.innerHTML = items.map((x) => `<span class="chip ${cls}">${x}</span>`).join("");
+      }
+
+      async function submitRequest() {
         try {
-          const items = parseInput(payload.value);
-          if (!items.length) throw new Error("Please enter at least one value.");
+          const tokens = parseTokens(payload.value);
+          if (!tokens.length) throw new Error("Enter at least one relationship.");
+
+          const parsed = parseGraph(tokens);
+          const { trees, cycleCount, children } = buildForest(parsed.edges);
+          const largestTree = trees.reduce((m, t) => (t.size > (m?.size || 0) ? t : m), null);
+
+          treeCountEl.textContent = String(trees.length);
+          cycleCountEl.textContent = String(cycleCount);
+          largestRootEl.textContent = largestTree ? largestTree.root : "-";
+          invalidCountEl.textContent = String(parsed.invalid.length);
+
+          treeGrid.innerHTML = trees.map((t, i) => drawTreeCard(t, i, children, i < cycleCount)).join("");
+          renderChips(invalidEntries, parsed.invalid, "red");
+          renderChips(duplicateEntries, parsed.duplicate, "orange");
+
           const base = (baseUrl.value.trim() || window.location.origin).replace(/\/+$/, "");
           const endpoint = `${base}/bfhl`;
-
-          setStatus("Sending request...", true);
           const res = await fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ data: items })
+            body: JSON.stringify({ data: tokens })
           });
           const json = await res.json().catch(() => ({}));
-
           responseJson.textContent = JSON.stringify(json, null, 2);
-          updateOverview(json);
-          renderTokens(json);
-          renderTree(json);
-          renderGraph(items);
-
-          setStatus(res.ok ? "Success! Response received from API." : `API error (${res.status}).`, res.ok);
-        } catch (e) {
-          setStatus(`Error: ${e.message}`, false);
+          setStatus(res.ok ? "Success! Response received from API" : `API error (${res.status})`, res.ok);
+        } catch (err) {
+          setStatus(`Error: ${err.message}`, false);
         }
-      });
+      }
 
-      sampleBtn.addEventListener("click", () => {
-        payload.value = "a,1,334,4,R,$";
-      });
-
+      submitBtn.addEventListener("click", submitRequest);
       clearBtn.addEventListener("click", () => {
         payload.value = "";
+        status.textContent = "";
         responseJson.textContent = "{}";
-        bucketList.innerHTML = "<span>No tokens yet</span>";
-        graphView.innerHTML = '<div class="graph-empty">Enter edges like A->B, A->C to view graph</div>';
-        treeView.innerHTML = '<div class="tree"><h4>Root</h4><pre>• (awaiting)</pre></div><div class="tree"><h4>Odd Nodes</h4><pre>• -</pre></div><div class="tree"><h4>Even Nodes</h4><pre>• -</pre></div>';
-        updateOverview({});
-        setStatus("", true);
+        treeCountEl.textContent = "0";
+        cycleCountEl.textContent = "0";
+        largestRootEl.textContent = "-";
+        invalidCountEl.textContent = "0";
+        treeGrid.innerHTML = "";
+        renderChips(invalidEntries, [], "red");
+        renderChips(duplicateEntries, [], "orange");
+      });
+
+      signInBtn.addEventListener("click", () => {
+        const name = studentNameInput.value.trim();
+        const email = studentEmailInput.value.trim().toLowerCase();
+        const collegeId = studentCollegeIdInput.value.trim().toUpperCase();
+        if (!name || !email || !collegeId) return setAuthStatus("Please fill Name, College Email, and College ID.", false);
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setAuthStatus("Enter a valid email.", false);
+        const student = { name, email, collegeId };
+        localStorage.setItem("bfhl_student", JSON.stringify(student));
+        applySession(student);
       });
 
       baseUrl.value = window.location.origin;
-      frontendLink.textContent = window.location.origin;
-      frontendLink.href = window.location.origin;
-      backendLink.textContent = window.location.origin;
-      backendLink.href = window.location.origin;
-      bucketList.innerHTML = "<span>No tokens yet</span>";
+      renderChips(invalidEntries, [], "red");
+      renderChips(duplicateEntries, [], "orange");
+
+      const savedStudent = localStorage.getItem("bfhl_student");
+      if (savedStudent) {
+        try { applySession(JSON.parse(savedStudent)); } catch (_) { localStorage.removeItem("bfhl_student"); }
+      }
     </script>
   </body>
 </html>
